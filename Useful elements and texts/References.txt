@@ -1,0 +1,26 @@
+References for names lists:
+- https://github.com/arineng/arincli/tree/master/lib
+
+reference for names classification:
+- https://github.com/DanielleSucher/Jailbreak-the-Patriarchy (female and male gender related lists of words)
+
+- gender the sentence: http://nealcaren.github.io/text-as-data/html/times_gender.html
+
+- gender analysis: https://data.mendeley.com/datasets/cmkmx2gzb3/1
+
+sentiment analysis:
+- https://www.analyticsvidhya.com/blog/2021/10/sentiment-analysis-with-textblob-and-vader/
+
+- (posi and nega word list):
+	- Bing Liu, Minqing Hu and Junsheng Cheng. "Opinion Observer: Analyzing 
+        and Comparing Opinions on the Web." Proceedings of the 14th 
+        International World Wide Web conference (WWW-2005), May 10-14, 
+        2005, Chiba, Japan.
+
+	- http://www2.imm.dtu.dk/pubdb/pubs/6010-full.html (The ranked words)
+
+	- https://github.com/kunaldhariwal/TwisentR (Neutral words)
+
+- graphs from notebookJS: https://github.com/jorgehpo/notebookJS
+
+- to be seen: https://www.frontiersin.org/articles/10.3389/fpsyg.2020.574746/full
