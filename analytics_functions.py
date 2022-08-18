@@ -64,18 +64,6 @@ def word_common_contexts(list_of_words, text, remove_punctuation=True):
     nltk_text = text_object_creator(text, remove_punctuation)
     return nltk_text.common_contexts(list_of_words)
 
-# Lexical dispersion of words in text
-def word_dispersion_plot(list_of_words, text, remove_punctuation=True):
-    nltk_text = text_object_creator(text, remove_punctuation)
-    return nltk_text.dispersion_plot(list_of_words)
-
-def frequency_distribution(text, number_of_words_to_display=50, show_plot=True, remove_punctuation=True):
-    nltk_text = text_object_creator(text, remove_punctuation)
-    f_distribution = FreqDist(nltk_text)
-    if show_plot:
-        f_distribution.plot(number_of_words_to_display, cumulative=False)
-    return f_distribution.most_common(number_of_words_to_display)
-
 def hapaxes(text, remove_punctuation=True):
     nltk_text = text_object_creator(text, remove_punctuation)
     f_distribution = FreqDist(nltk_text)
@@ -84,18 +72,6 @@ def hapaxes(text, remove_punctuation=True):
 def collocations(text, remove_punctuation=True):
     nltk_text = text_object_creator(text, remove_punctuation)
     return nltk_text.collocations()
-
-def conditional_frequency_distribution(list_of_words, corpus, cumulative_counts=False):
-    c_f_distribution = nltk.ConditionalFreqDist(
-        (target, fileid[:4]) # The "[:-4]" is useful to take the year of publication of each text
-        for fileid in corpus.fileids()
-        if fileid != '.DS_store'
-        for word in corpus.words(fileid)
-        for target in list_of_words 
-        if word.lower().startswith(target)) # The "startswith()" method is useful to take all the words (for example if in targets we have "girl", the function will take also "girls")
-    c_f_distribution.plot(cumulative=cumulative_counts)
-    #c_f_distribution.tabulate(conditions=['English', 'German_Deutsch'], samples=range(10), cumulative=True)
-    return c_f_distribution
 
 def common_words_list(word_dict, percentage_dict, output_set, direct_percentage=True):
     if direct_percentage:
@@ -118,18 +94,7 @@ def common_words_list(word_dict, percentage_dict, output_set, direct_percentage=
                 output_set.add(word)
                 print('%.1f\t%01d\t%01d\t%s' % (ratio, word_dict['male'].get(word,0), word_dict['female'].get(word,0), word))
 
-
-#NOT USED
 """
-# Function to extract the proper nouns 
-def ProperNounExtractor(text):
-    res = list()
-    tagged = pos_tagging(text)
-    for (word, tag) in tagged:
-        if tag == 'NNP': # If the word is a proper noun
-            res.append(word.lower().capitalize())
-    return res
-
 # Classifiers functions
 def gender_feature_last_char(name):
     feature = {"last_character" : name[-1],

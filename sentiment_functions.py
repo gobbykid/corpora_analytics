@@ -1,40 +1,8 @@
 from normalization_functions import *
 from analytics_functions import *
 from textblob import TextBlob
-from csv import DictWriter
+from nrclex import NRCLex
 
-"""
-names_corpus = create_corpus("Classifier/Names/")
-# This list will contain tuples with a name[0] and its gender[1] (properly male or female)
-names_list = ([(name,'male') for name in names.words("male.txt")] +
-                        [(name,'female') for name in names.words("female.txt")] +
-                        [(name.lower().capitalize(),'male') for name in names_corpus.words("male_names.txt")] +
-                        [(name.lower().capitalize(),'female') for name in names_corpus.words("female_names.txt")])
-names_list = set(names_list)
-
-# Even though I've looked for other peculiar features for gender classification in names
-# I found that the most representative is this one, in fact adding other (not too much complex)
-# features (such as number and order of "a" in a name) does not increase accuravy and sometimes it
-# even decrease accuracy level...
-
-feature_list = [(gender_feature_last_char(name),gender) for (name,gender) in names_list]
-
-total_names = len(feature_list) - 1
-mid = total_names - 1
-train_list,test_list = feature_list[:mid],feature_list[mid:]
-
-# this is a test to see the percentage of correct answers given by the classifier
-# In reality we train our classifier with the whole of names
-test_classifier = nltk.NaiveBayesClassifier.train(train_list)
-print(nltk.classify.accuracy(test_classifier, test_list))
-
-#gender_classifier = nltk.NaiveBayesClassifier.train(feature_list)
-
-#print(test_classifier.classify(gender_feature_last_char("Luca")))
-
-"""
-
-#---------------------------------------------------------
 # GENDER THE SENTENCE
 
 #The function below takes a work list and returns the gender of the person being 
@@ -97,12 +65,9 @@ def is_it_proper(word, proper_nouns):
             proper_nouns[word_lower] = {case:1}
 
 def gender_analysis(text, sentence_dict, words_dict, raw_words_dict, freq_dict, sentiment_dict, proper_nouns_dict, male_words, female_words):
-    #should check [To be done as first operation] if there is a proper 
-    # name in the sentence to which the sentence is referred
-
     #create list of sentences
     list_of_sentences = syntok_list_of_sentences(text)
-    #tokenization NOT for analysis
+    #tokenization not for analysis
     for sentence in list_of_sentences:
         for word in word_tokenization(sentence, True, False)[1:]:
             is_it_proper(word, proper_nouns_dict)
@@ -124,8 +89,6 @@ def gender_analysis(text, sentence_dict, words_dict, raw_words_dict, freq_dict, 
         increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_dict)
         polarity_score = sentiment_analysis(sentence)
 
-        
-
         if polarity_score < 0:
             polarity = 'NEG'
         elif polarity_score > 0:
@@ -145,4 +108,14 @@ def gender_analysis(text, sentence_dict, words_dict, raw_words_dict, freq_dict, 
             sentiment_dict[gender][polarity][sentence] = polarity_score
         else:
             sentiment_dict[gender][polarity][sentence] = polarity_score
-        
+
+def emotion_frequencies(url, emotion_dict):
+    text = text_reader(url)
+    emo_analyzer = NRCLex(text) 
+    emotions = emo_analyzer.affect_frequencies
+    for emo in emotions:
+        if emo not in emotion_dict:
+            emotion_dict[emo] = emotions[emo]
+        else:
+            emotion_dict[emo] = (emotion_dict[emo] + emotions[emo])/2
+    return emotion_dict

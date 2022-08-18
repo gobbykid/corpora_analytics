@@ -23,18 +23,6 @@ from syntok.tokenizer import Tokenizer
 tokenizer = RegexpTokenizer(pattern= "\s+", gaps=True) 
 # This "clean_tokenizer" avoid to consider punctuation but takes into consideration ' and - and _
 clean_tokenizer = RegexpTokenizer(pattern= "[a-zA-Z']+")
-#
-"""
->>> text = 'That U.S.A. poster-print costs $12.40...'
->>> pattern = r'''(?x)     # set flag to allow verbose regexps
-...     (?:[A-Z]\.)+       # abbreviations, e.g. U.S.A.
-...   | \w+(?:-\w+)*       # words with optional internal hyphens
-...   | \$?\d+(?:\.\d+)?%? # currency and percentages, e.g. $12.40, 82%
-...   | \.\.\.             # ellipsis
-...   | [][.,;"'?():-_`]   # these are separate tokens; includes ], [
-... '''
->>> nltk.regexp_tokenize(text, pattern)
-"""
 sentence_tokenizer = nltk.data.load('Tokenizers/english.pickle')
 stopwords = stopwords.words('english')
 
@@ -168,21 +156,3 @@ def pos_tagging(text_or_list_of_words, is_list=False):
         return pos_tag(tokens, tagset='universal')
     else:
         return pos_tag(text_or_list_of_words, tagset='universal')
-
-"""
-
-a = nouns_extraction("Raw/F/little_women.txt")
-print(a)
-
-
-
-corpusdir = 'Clean/F/'
-cor = create_corpus(corpusdir)
-
-
-a = word_tokenization("She's a heroine", True, True)
-b = lemmatization("she's, a girl who don't won't couldn't loves")
-c = expand_contractions("she's, a girl who don't won't couldn't loves")
-print(a, '\n', b, '\n', c)
-#ar = lemmatizer.lemmatize("painted")
-"""

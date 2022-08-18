@@ -1,3 +1,5 @@
+from normalization_functions import *
+from analytics_functions import *
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from notebookjs import execute_js
@@ -32,3 +34,26 @@ def radial_bar_chart_generator(csv_path):
     execute_js(library_list=[d3_lib_url, radial_bar_lib], main_function="radial_bar", 
              data_dict=energy.to_dict(orient="records"), css_list=[radial_bar_css])
 
+# Lexical dispersion of words in text
+def word_dispersion_plot(list_of_words, text, remove_punctuation=True):
+    nltk_text = text_object_creator(text, remove_punctuation)
+    return nltk_text.dispersion_plot(list_of_words)
+
+def frequency_distribution(text, number_of_words_to_display=50, show_plot=True, remove_punctuation=True):
+    nltk_text = text_object_creator(text, remove_punctuation)
+    f_distribution = FreqDist(nltk_text)
+    if show_plot:
+        f_distribution.plot(number_of_words_to_display, cumulative=False)
+    return f_distribution.most_common(number_of_words_to_display)
+
+def conditional_frequency_distribution(list_of_words, corpus, cumulative_counts=False):
+    c_f_distribution = nltk.ConditionalFreqDist(
+        (target, fileid[:4]) # The "[:-4]" is useful to take the year of publication of each text
+        for fileid in corpus.fileids()
+        if fileid != '.DS_store'
+        for word in corpus.words(fileid)
+        for target in list_of_words 
+        if word.lower().startswith(target)) # The "startswith()" method is useful to take all the words (for example if in targets we have "girl", the function will take also "girls")
+    c_f_distribution.plot(cumulative=cumulative_counts)
+    #c_f_distribution.tabulate(conditions=['English', 'German_Deutsch'], samples=range(10), cumulative=True)
+    return c_f_distribution
