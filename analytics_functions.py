@@ -1,4 +1,5 @@
 from normalization_functions import *
+import pandas as pd
 
 def token_count(text, remove_punctuation=True):
     tokens = word_tokenization(text, remove_punctuation, True)
@@ -73,26 +74,49 @@ def collocations(text, remove_punctuation=True):
     nltk_text = text_object_creator(text, remove_punctuation)
     return nltk_text.collocations()
 
-def common_words_list(word_dict, percentage_dict, output_set, direct_percentage=True):
+def common_words_df(word_dict, percentage_dict, output_set, direct_percentage=True):
+    store_dict = {
+        "word":[],
+        "ratio":[],
+        "f_corpus raw count":[],
+        "m_corpus raw count":[],
+        "f_corpus percentage":[],
+        "m_corpus percentage":[]
+    }
+    # With direct_percentage==True, we mean we are working on male words, sorted from the higher 
+    # to the lower (in terms of frequencies) thanks to "reverse=True"
     if direct_percentage:
         for word in sorted(percentage_dict,key=percentage_dict.get,reverse=True)[:50]:
             try:
                 ratio = percentage_dict[word]/(1-percentage_dict[word])
             except:
                 #That is the situation in which a word only appears in male sentences
-                ratio = 10
+                ratio = 100
             if ratio >= 3:
                 output_set.add(word)
-                print('%.1f\t%02d\t%02d\t%s' % (ratio, word_dict['male'].get(word,0), word_dict['female'].get(word,0), word))
+                store_dict["word"].append(word)
+                store_dict["ratio"].append(round(ratio,2))
+                store_dict["f_corpus raw count"].append(word_dict['female'].get(word,0))
+                store_dict["m_corpus raw count"].append(word_dict['male'].get(word,0))
+                store_dict["f_corpus percentage"].append(round((1-percentage_dict.get(word,0)),4))
+                store_dict["m_corpus percentage"].append(round(percentage_dict.get(word,0),4))
+    # There, we work with female words, in a from low to high sorted dictionary
     else:
-        for word in sorted (percentage_dict,key=percentage_dict.get,reverse=False)[:50]:
+        for word in sorted(percentage_dict,key=percentage_dict.get,reverse=False)[:50]:
             try:
                 ratio=(1-percentage_dict[word])/percentage_dict[word]
             except:
-                ratio = 10
+                ratio = 100
             if ratio >= 3:
                 output_set.add(word)
-                print('%.1f\t%01d\t%01d\t%s' % (ratio, word_dict['male'].get(word,0), word_dict['female'].get(word,0), word))
+                store_dict["word"].append(word)
+                store_dict["ratio"].append(round(ratio,2))
+                store_dict["f_corpus raw count"].append(word_dict['female'].get(word,0))
+                store_dict["m_corpus raw count"].append(word_dict['male'].get(word,0))
+                store_dict["f_corpus percentage"].append(round((1-percentage_dict.get(word,0)),4))
+                store_dict["m_corpus percentage"].append(round(percentage_dict.get(word,0),4))
+    df = pd.DataFrame(store_dict)
+    return df
 
 """
 # Classifiers functions

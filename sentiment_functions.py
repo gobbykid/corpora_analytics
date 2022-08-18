@@ -30,7 +30,8 @@ def gender_the_sentence(sentence_words, male_words, female_words):
     return gender
 
 def increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_dict):
-    #here could be better to rejoin the sentence and tokenize it again with contractions mainteined and punctuation remove???
+    # words_dict -> contains the total number of words used in the gendered sentences (ex. 20 male sentences of 10 words: words_dict["male"]=200)
+    # freq_dict -> contains the total number of occurrences of a specific word in each gendered sentence
     sentence_dict[gender] += 1
     words_dict[gender] += len(sentence_tokens)
     for token in sentence_tokens:
@@ -73,7 +74,6 @@ def gender_analysis(text, sentence_dict, words_dict, raw_words_dict, freq_dict, 
             is_it_proper(word, proper_nouns_dict)
         #With "expand_contractions" I also tokenize the text
         sentence_tokens = expand_contractions(sentence, False, True, True)
-        sentence_length = len(sentence_tokens)
         sentence_tokens = lemmatization(sentence_tokens)
         for token in sentence_tokens:
             if token in stopwords or token in ['"',"'",'.',',','/','-']:

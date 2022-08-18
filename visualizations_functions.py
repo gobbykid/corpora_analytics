@@ -39,8 +39,16 @@ def word_dispersion_plot(list_of_words, text, remove_punctuation=True):
     nltk_text = text_object_creator(text, remove_punctuation)
     return nltk_text.dispersion_plot(list_of_words)
 
-def frequency_distribution(text, number_of_words_to_display=50, show_plot=True, remove_punctuation=True):
-    nltk_text = text_object_creator(text, remove_punctuation)
+def frequency_distribution(list_of_urls, number_of_words_to_display=50, show_plot=True, remove_punctuation=True):
+    cleaned_texts = list()
+    res = ""
+    for url in list_of_urls:
+        new_url = text_cleaner(url)
+        cleaned_texts.append(new_url)
+    for url in cleaned_texts:
+        text = text_reader(url)
+        res += text
+    nltk_text = text_object_creator(res, remove_punctuation)
     f_distribution = FreqDist(nltk_text)
     if show_plot:
         f_distribution.plot(number_of_words_to_display, cumulative=False)
