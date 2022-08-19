@@ -38,7 +38,7 @@ def increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_di
         #This script has the aim to find (if exists) the word inside the word_freq
         # dictionary and to increment it by one, if the key (that is the word) does
         # not exist, then it will add the word with value = 0 and increment the value
-        # by 1, ex: .get(key, default_value_if_key_not_found) 
+        # by 1, ex: .get(key, default_value_if_key_not_found)
         freq_dict[gender][token] = freq_dict[gender].get(token,0) + 1  
 
 def sentiment_analysis(sentence):
@@ -119,3 +119,92 @@ def emotion_frequencies(url, emotion_dict):
         else:
             emotion_dict[emo] = (emotion_dict[emo] + emotions[emo])/2
     return emotion_dict
+
+def sentence_emotion_analyzer(sentence, sentences_dict_df):
+    emo_analyzer = NRCLex(sentence) 
+    emotions = emo_analyzer.affect_frequencies
+    for emo in emotions:
+        if emo != "anticip":
+            sentences_dict_df[sentence][emo] = emotions[emo]
+    
+
+def test_gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, sentiment_dict, proper_nouns_dict, male_words, female_words):
+    #create list of sentences
+    list_of_sentences = syntok_list_of_sentences(text)
+    #tokenization not for analysis
+    for sentence in list_of_sentences:
+        sentences_dict_df[sentence] = {
+                                        "gender":"",
+                                        "polarity":"",
+                                        "score":"",
+                                        'fear': 0,
+                                        'anger': 0,
+                                        'trust': 0,
+                                        'surprise': 0,
+                                        'positive': 0,
+                                        'negative': 0,
+                                        'sadness': 0,
+                                        'disgust': 0,
+                                        'joy': 0,
+                                        'anticipation': 0
+                                        }
+        sentence_emotion_analyzer(sentence, sentences_dict_df)
+        for word in word_tokenization(sentence, True, False)[1:]:
+            is_it_proper(word, proper_nouns_dict)
+        #With "expand_contractions" I also tokenize the text
+        sentence_tokens = expand_contractions(sentence, False, True, True)
+        sentence_tokens = lemmatization(sentence_tokens)
+        for token in sentence_tokens:
+            if token in stopwords or token in ['"',"'",'.',',','/','-']:
+                sentence_tokens.remove(token)
+            else:
+                if token not in raw_words_dict:
+                    raw_words_dict[token] = 1
+                else:
+                    raw_words_dict[token] += 1
+            
+        #gender the sentence
+        gender = gender_the_sentence(sentence_tokens, male_words, female_words)
+        sentences_dict_df[sentence]["gender"] = gender
+        increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_dict)
+        polarity_score = sentiment_analysis(sentence)
+        sentences_dict_df[sentence]["score"] = polarity_score
+
+        if polarity_score < 0:
+            polarity = 'NEG'
+        elif polarity_score > 0:
+            polarity = 'POS'
+        else:
+            polarity = 'NEU'
+        sentences_dict_df[sentence]["polarity"] = polarity
+
+        if gender == 'male':
+            sentiment_dict[gender][polarity][sentence] = polarity_score
+        elif gender == 'female': 
+            sentiment_dict[gender][polarity][sentence] = polarity_score
+        elif gender == 'mainly_male': 
+            sentiment_dict[gender][polarity][sentence] = polarity_score
+        elif gender == 'mainly_female': 
+            sentiment_dict[gender][polarity][sentence] = polarity_score
+        elif gender == 'both': 
+            sentiment_dict[gender][polarity][sentence] = polarity_score
+        else:
+            sentiment_dict[gender][polarity][sentence] = polarity_score
+
+sentences_dict_df = {
+    "sentence":{
+        "gender":"",
+        "polarity":"",
+        "score":"",
+        'fear': 0.06581840024547972,
+        'anger': 0.04010545517783605,
+        'trust': 0.11695044598034351,
+        'surprise': 0.0732976982030891,
+        'positive': 0.17503607155019787,
+        'negative': 0.17390092703781612,
+        'sadness': 0.08731623909076737,
+        'disgust': 0.04257919349290297,
+        'joy': 0.11072519834706926,
+        'anticipation': 0.11427037087449804
+    }
+}
