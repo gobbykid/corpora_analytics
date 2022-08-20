@@ -120,35 +120,17 @@ def emotion_frequencies(url, emotion_dict):
             emotion_dict[emo] = (emotion_dict[emo] + emotions[emo])/2
     return emotion_dict
 
-def sentence_emotion_analyzer(sentence, sentences_dict_df):
-    emo_analyzer = NRCLex(sentence) 
-    emotions = emo_analyzer.affect_frequencies
-    for emo in emotions:
-        if emo != "anticip":
-            sentences_dict_df[sentence][emo] = emotions[emo]
-    
-
 def test_gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, sentiment_dict, proper_nouns_dict, male_words, female_words):
     #create list of sentences
     list_of_sentences = syntok_list_of_sentences(text)
     #tokenization not for analysis
     for sentence in list_of_sentences:
         sentences_dict_df[sentence] = {
+                                        "number_of_tokens":0,
                                         "gender":"",
                                         "polarity":"",
-                                        "score":"",
-                                        'fear': 0,
-                                        'anger': 0,
-                                        'trust': 0,
-                                        'surprise': 0,
-                                        'positive': 0,
-                                        'negative': 0,
-                                        'sadness': 0,
-                                        'disgust': 0,
-                                        'joy': 0,
-                                        'anticipation': 0
+                                        "score":""
                                         }
-        sentence_emotion_analyzer(sentence, sentences_dict_df)
         for word in word_tokenization(sentence, True, False)[1:]:
             is_it_proper(word, proper_nouns_dict)
         #With "expand_contractions" I also tokenize the text
@@ -162,7 +144,8 @@ def test_gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw
                     raw_words_dict[token] = 1
                 else:
                     raw_words_dict[token] += 1
-            
+        sentences_dict_df[sentence]["number_of_tokens"] = len(sentence_tokens)
+        
         #gender the sentence
         gender = gender_the_sentence(sentence_tokens, male_words, female_words)
         sentences_dict_df[sentence]["gender"] = gender
@@ -190,21 +173,3 @@ def test_gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw
             sentiment_dict[gender][polarity][sentence] = polarity_score
         else:
             sentiment_dict[gender][polarity][sentence] = polarity_score
-
-sentences_dict_df = {
-    "sentence":{
-        "gender":"",
-        "polarity":"",
-        "score":"",
-        'fear': 0.06581840024547972,
-        'anger': 0.04010545517783605,
-        'trust': 0.11695044598034351,
-        'surprise': 0.0732976982030891,
-        'positive': 0.17503607155019787,
-        'negative': 0.17390092703781612,
-        'sadness': 0.08731623909076737,
-        'disgust': 0.04257919349290297,
-        'joy': 0.11072519834706926,
-        'anticipation': 0.11427037087449804
-    }
-}

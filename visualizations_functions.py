@@ -8,6 +8,8 @@ from PIL import Image
 from os import path
 import os
 import pandas as pd
+import scipy.stats as stats
+import pylab
 
 def wordcloud_generator(freq_dict, male_author=True):
     d = path.dirname(__file__) if "__file__" in locals() else os.getcwd()
@@ -61,3 +63,20 @@ def conditional_frequency_distribution(list_of_words, corpus, cumulative_counts=
     c_f_distribution.plot(cumulative=cumulative_counts)
     #c_f_distribution.tabulate(conditions=['English', 'German_Deutsch'], samples=range(10), cumulative=True)
     return c_f_distribution
+
+def distribution_graph(series, left_limit, right_limit):
+    # Calculating mean and Stdev of AGW
+    mean = np.mean(series)
+    std = np.std(series)
+    # Calculating probability density function (PDF)
+    pdf = stats.norm.pdf(series.sort_values(), mean, std)
+    # Drawing a graph
+    plt.plot(series.sort_values(), pdf)
+    plt.xlim([left_limit,right_limit])
+    plt.xlabel("Score", size=12)    
+    plt.ylabel("Frequency", size=12)                
+    plt.grid(True, alpha=0.3, linestyle="--")
+    plt.show()
+
+def qq_plot(data):
+    return stats.probplot(data,plot=pylab)

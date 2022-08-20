@@ -1,5 +1,7 @@
 from normalization_functions import *
 import pandas as pd
+from random import sample
+from visualizations_functions import *
 
 def token_count(text, remove_punctuation=True):
     tokens = word_tokenization(text, remove_punctuation, True)
@@ -117,6 +119,76 @@ def common_words_df(word_dict, percentage_dict, output_set, direct_percentage=Tr
                 store_dict["m_corpus percentage"].append(round(percentage_dict.get(word,0),4))
     df = pd.DataFrame(store_dict)
     return df
+
+def check_distribution (lists_of_scores):
+    if len(lists_of_scores) > 1:
+        res_scores = list()
+        for scores in lists_of_scores:
+            res_scores.extend(scores)
+    elif len(lists_of_scores) == 1:
+        res_scores = lists_of_scores[0]
+    # Turn all the scores into positive (or == 0) by adding 1 to them
+    # Useful to adopt the Boxcox transformation, that will regularize the 
+    # distribution of our values into a normal distribution.
+    positive_scores = list()
+    for el in sorted(res_scores):
+    # Remove extremes
+        if el != 1 and el != -1:
+            positive_scores.append(el+1)
+    positive_scores, param = stats.boxcox(positive_scores)
+    # Computing p-value
+    normality_result = stats.normaltest(positive_scores)
+    p_value = normality_result[1]
+    # Computing a Q-Q-Plot
+    qq_plot(positive_scores)
+    if p_value > 0.05:
+        print("Data follow a normal distribution.")
+        print("The p-value is:", p_value)
+        print("The mean is:", np.mean(Series(positive_scores)))
+        print("The std is:", np.std(Series(positive_scores)))
+        return (np.mean(Series(positive_scores)), np.std(Series(positive_scores)))
+    else:
+        print("Data do not follow a normal distribution. \n The p-value is:", p_value)
+        return False
+
+def f_test(data_1, data_2):
+    positive_scores_1 = list()
+    positive_scores_2 = list()
+    for el in sorted(data_1):
+    # Remove extremes
+        if el != 1 and el != -1:
+            positive_scores_1.append(el+1)
+    positive_scores_1, param = stats.boxcox(positive_scores_1)
+    for el in sorted(data_2):
+    # Remove extremes
+        if el != 1 and el != -1:
+            positive_scores_2.append(el+1)
+    positive_scores_2, param = stats.boxcox(positive_scores_2)
+    num = np.array(positive_scores_1)
+    den = np.array(positive_scores_2)
+    var_num = np.var(num)
+    var_den = np.var(den)
+    if var_num < var_den:
+        var_num, var_den = var_den, var_num
+        num, den = den, num
+    f_stats = np.var(num)/np.var(den) #calculate F test statistic 
+    dfn = num.size-1 #define degrees of freedom numerator 
+    dfd = den.size-1 #define degrees of freedom denominator 
+    p_value = 1-stats.f.cdf(f_stats, dfn, dfd) #find p-value of F test statistic 
+    if p_value > 0.05:
+        print("According to an F-test, we cannot reject the null hypothesis, in fact:")
+        print("The F-statistics is:", f_stats)
+        print("The p-value is:", p_value)
+        print("The two variances do not differ in a significant way")
+    else:
+        print("According to an F-test, we can reject the null hypothesis, in fact:")
+        print("The F-statistics is:", f_stats)
+        print("The p-value is:", p_value)
+        print("The two variances differ in a significant way")
+    return f_stats, p_value
+
+def t_test_independence():
+    pass
 
 """
 # Classifiers functions

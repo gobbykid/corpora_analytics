@@ -24,7 +24,25 @@ tokenizer = RegexpTokenizer(pattern= "\s+", gaps=True)
 # This "clean_tokenizer" avoid to consider punctuation but takes into consideration ' and - and _
 clean_tokenizer = RegexpTokenizer(pattern= "[a-zA-Z']+")
 sentence_tokenizer = nltk.data.load('Tokenizers/english.pickle')
+
+# Seen that some of the stopwords are also contained in these 2 sets that we need to
+# gender sentences, I will first remove all of them.
+male_words=set(['guy','dr','spokesman','chairman',"men's",'men','him',"he's",'his','boy',
+'boyfriend','boyfriends','boys','brother','brothers','dad','dads','dude','father',
+'fathers','fiance','gentleman','gentlemen','god','grandfather','grandpa',
+'grandson','groom','he','himself','his','husband','pastor','husbands','king','male','man',
+'mr','nephew','nephews','priest','prince','son','sons','uncle','uncles',
+'waiter','widower','widowers','he','he is'])
+female_words=set(['heroine','drss','spokeswoman','chairwoman',"women's",'actress','women',
+"she's",'her','aunt','aunts','bride','daughter','daughters','female','fiancee','girl',
+'girlfriend','girlfriends','girls','goddess','granddaughter','grandma','grandmother',
+'herself','ladies','lady','mom','moms','mother','mothers','mrs','ms','niece',
+'nieces','priestess','princess','queens','she','sister','sisters','waitress',
+'widow','widows','wife','wives','woman','she','she is'])
 stopwords = stopwords.words('english')
+for word in stopwords:
+    if word in male_words or word in female_words:
+        stopwords.remove(word)
 
 # Text reading and normalization functions
 
