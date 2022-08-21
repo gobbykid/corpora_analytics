@@ -1,3 +1,4 @@
+from lib2to3.pgen2.pgen import DFAState
 from normalization_functions import *
 import pandas as pd
 from random import sample
@@ -194,6 +195,16 @@ def population_sampling(population, sample_size):
         if p_value > 0.05:
             return pop_sample
 
+def stratified_random_sampling(population, sample_size):
+    population_df = DataFrame(population)
+    normal = False
+    while not normal:
+        fraction = sample_size/len(population_df.index)
+        sample_df = population_df.groupby('labels', group_keys=False).apply(lambda x: x.sample(frac=fraction))
+        pop_sample = sample_df["scores"].to_list()
+        p_value = check_distribution(pop_sample, True)
+        if p_value > 0.05:
+            return pop_sample
 
 def t_test_independence():
     pass
