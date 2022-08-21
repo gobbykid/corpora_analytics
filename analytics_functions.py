@@ -120,18 +120,12 @@ def common_words_df(word_dict, percentage_dict, output_set, direct_percentage=Tr
     df = pd.DataFrame(store_dict)
     return df
 
-def check_distribution (lists_of_scores):
-    if len(lists_of_scores) > 1:
-        res_scores = list()
-        for scores in lists_of_scores:
-            res_scores.extend(scores)
-    elif len(lists_of_scores) == 1:
-        res_scores = lists_of_scores[0]
+def check_distribution (sample, sample_check=False):
     # Turn all the scores into positive (or == 0) by adding 1 to them
     # Useful to adopt the Boxcox transformation, that will regularize the 
     # distribution of our values into a normal distribution.
     positive_scores = list()
-    for el in sorted(res_scores):
+    for el in sorted(sample):
     # Remove extremes
         if el != 1 and el != -1:
             positive_scores.append(el+1)
@@ -140,16 +134,21 @@ def check_distribution (lists_of_scores):
     normality_result = stats.normaltest(positive_scores)
     p_value = normality_result[1]
     # Computing a Q-Q-Plot
-    qq_plot(positive_scores)
-    if p_value > 0.05:
-        print("Data follow a normal distribution.")
-        print("The p-value is:", p_value)
-        print("The mean is:", np.mean(Series(positive_scores)))
-        print("The std is:", np.std(Series(positive_scores)))
-        return (np.mean(Series(positive_scores)), np.std(Series(positive_scores)))
+    if not sample_check:
+        qq_plot(positive_scores)
+        if p_value > 0.05:
+            print("According to a D'Agostino-Pearson normality test, we cannot reject the null hypothesis, in fact:")
+            print("The p-value is:", p_value)
+            print("The mean is:", np.mean(Series(positive_scores)))
+            print("The std is:", np.std(Series(positive_scores)))
+            print("So, data follow a normal distribution.")
+            return (np.mean(Series(positive_scores)), np.std(Series(positive_scores)))
+        else:
+            print("According to a D'Agostino-Pearson normality test, data do not follow a normal distribution.")
+            print("The p-value is:", p_value)
+            return False
     else:
-        print("Data do not follow a normal distribution. \n The p-value is:", p_value)
-        return False
+        return p_value
 
 def f_test(data_1, data_2):
     positive_scores_1 = list()
@@ -186,6 +185,15 @@ def f_test(data_1, data_2):
         print("The p-value is:", p_value)
         print("The two variances differ in a significant way")
     return f_stats, p_value
+
+def population_sampling(population, sample_size):
+    normal = False
+    while not normal:
+        pop_sample = sample(population, sample_size)
+        p_value = check_distribution(pop_sample, True)
+        if p_value > 0.05:
+            return pop_sample
+
 
 def t_test_independence():
     pass
