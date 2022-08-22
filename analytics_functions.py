@@ -48,17 +48,8 @@ def word_percentage(token, text, remove_punctuation=True):
 
 # Concordances are best computed for raw or clean texts?
 def word_concordances(word, text, remove_punctuation=False):
-    nltk_text = text_object_creator(text, remove_punctuation, False)
+    nltk_text = text_object_creator(text, remove_punctuation, True)
     return nltk_text.concordance(word)
-
-def concordances_list(word, text, remove_punctuation=True):
-    res = list()
-    nltk_text = text_object_creator(text, remove_punctuation)
-    concordances_list = nltk_text.concordance_list(word)
-    for obj in concordances_list:
-        res.append((obj[0], obj[1], obj[2]))
-        # Returns a list of lists with [0]sx, [1]word, [2]dx
-    return res
 
 def word_similarities(word, text, remove_punctuation=True):
     nltk_text = text_object_creator(text, remove_punctuation)
@@ -192,8 +183,8 @@ def f_test(data_1, data_2, sample_check=False):
 def stratified_random_sampling(populations, sample_size):
     pop_samples = []
     for population in populations:
-        population_df = DataFrame(population)
         normal = False
+        population_df = DataFrame(population)
         while not normal:
             fraction = sample_size/len(population_df.index)
             sample_df = population_df.groupby('labels', group_keys=False).apply(lambda x: x.sample(frac=fraction))
@@ -206,7 +197,8 @@ def stratified_random_sampling(populations, sample_size):
     if f_test_results[1] > 0.05:
         return (pop_samples[0], pop_samples[1])
     else:
-        stratified_random_sampling(populations, sample_size)
+        sample_res = stratified_random_sampling(populations, sample_size)
+        return sample_res
         
 
 def t_test_independent(sample_1, sample_2):
