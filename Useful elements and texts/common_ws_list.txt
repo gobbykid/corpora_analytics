@@ -121,6 +121,7 @@ everywhere
 f
 far
 few
+fifth
 find
 finds
 first
@@ -368,6 +369,7 @@ shows
 side
 sides
 since
+sixth
 small
 smaller
 smallest
@@ -391,6 +393,7 @@ that
 that'll
 that's
 the
+thee
 their
 theirs
 them
@@ -412,9 +415,11 @@ thinks
 this
 those
 though
+thou
 three
 through
 thus
+thy
 tis
 to
 today
