@@ -65,50 +65,6 @@ def is_it_proper(word, proper_nouns):
         except:
             proper_nouns[word_lower] = {case:1}
 
-def gender_analysis(text, sentence_dict, words_dict, raw_words_dict, freq_dict, sentiment_dict, proper_nouns_dict, male_words, female_words):
-    #create list of sentences
-    list_of_sentences = syntok_list_of_sentences(text)
-    #tokenization not for analysis
-    for sentence in list_of_sentences:
-        for word in word_tokenization(sentence, True, False)[1:]:
-            is_it_proper(word, proper_nouns_dict)
-        #With "expand_contractions" I also tokenize the text
-        sentence_tokens = expand_contractions(sentence, False, True, True)
-        sentence_tokens = lemmatization(sentence_tokens)
-        for token in sentence_tokens:
-            if token in stopwords or token in ['"',"'",'.',',','/','-']:
-                sentence_tokens.remove(token)
-            else:
-                if token not in raw_words_dict:
-                    raw_words_dict[token] = 1
-                else:
-                    raw_words_dict[token] += 1
-            
-        #gender the sentence
-        gender = gender_the_sentence(sentence_tokens, male_words, female_words)
-        increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_dict)
-        polarity_score = sentiment_analysis(sentence)
-
-        if polarity_score < 0:
-            polarity = 'NEG'
-        elif polarity_score > 0:
-            polarity = 'POS'
-        else:
-            polarity = 'NEU'
-
-        if gender == 'male':
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'female': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'mainly_male': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'mainly_female': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'both': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        else:
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-
 def emotion_frequencies(url, emotion_dict):
     text = text_reader(url)
     emo_analyzer = NRCLex(text) 
@@ -120,7 +76,7 @@ def emotion_frequencies(url, emotion_dict):
             emotion_dict[emo] = (emotion_dict[emo] + emotions[emo])/2
     return emotion_dict
 
-def test_gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, sentiment_dict, proper_nouns_dict, male_words, female_words):
+def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, proper_nouns_dict, male_words, female_words):
     #create list of sentences
     list_of_sentences = syntok_list_of_sentences(text)
     #tokenization not for analysis
@@ -160,16 +116,3 @@ def test_gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw
         else:
             polarity = 'NEU'
         sentences_dict_df[sentence]["polarity"] = polarity
-
-        if gender == 'male':
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'female': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'mainly_male': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'mainly_female': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        elif gender == 'both': 
-            sentiment_dict[gender][polarity][sentence] = polarity_score
-        else:
-            sentiment_dict[gender][polarity][sentence] = polarity_score

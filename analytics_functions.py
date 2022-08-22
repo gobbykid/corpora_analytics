@@ -151,7 +151,7 @@ def check_distribution (sample, sample_check=False):
     else:
         return p_value
 
-def f_test(data_1, data_2):
+def f_test(data_1, data_2, sample_check=False):
     positive_scores_1 = list()
     positive_scores_2 = list()
     for el in sorted(data_1):
@@ -176,38 +176,57 @@ def f_test(data_1, data_2):
     dfd = den.size-1 #define degrees of freedom denominator 
     p_value = 1-stats.f.cdf(f_stats, dfn, dfd) #find p-value of F test statistic 
     if p_value > 0.05:
-        print("According to an F-test, we cannot reject the null hypothesis, in fact:")
-        print("The F-statistics is:", f_stats)
-        print("The p-value is:", p_value)
-        print("The two variances do not differ in a significant way")
+        if not sample_check:
+            print("According to an F-test, we cannot reject the null hypothesis, in fact:")
+            print("The F-statistics is:", f_stats)
+            print("The p-value is:", p_value)
+            print("The two variances do not differ in a significant way")
     else:
-        print("According to an F-test, we can reject the null hypothesis, in fact:")
-        print("The F-statistics is:", f_stats)
+        if not sample_check:
+            print("According to an F-test, we can reject the null hypothesis, in fact:")
+            print("The F-statistics is:", f_stats)
+            print("The p-value is:", p_value)
+            print("The two variances differ in a significant way")
+    return (f_stats, p_value)
+
+def stratified_random_sampling(populations, sample_size):
+    pop_samples = []
+    for population in populations:
+        population_df = DataFrame(population)
+        normal = False
+        while not normal:
+            fraction = sample_size/len(population_df.index)
+            sample_df = population_df.groupby('labels', group_keys=False).apply(lambda x: x.sample(frac=fraction))
+            pop_sample = sample_df["scores"].to_list()
+            p_value = check_distribution(pop_sample, True)
+            if p_value > 0.05:
+                pop_samples.append(pop_sample)
+                normal = True
+    f_test_results = f_test(pop_samples[0], pop_samples[1], True)
+    if f_test_results[1] > 0.05:
+        return (pop_samples[0], pop_samples[1])
+    else:
+        stratified_random_sampling(populations, sample_size)
+        
+
+def t_test_independent(sample_1, sample_2):
+    variances_stats = round(f_test(sample_1, sample_2, True)[0],4)
+    same_variances = False
+    if variances_stats == 1.0000:
+        same_variances = True
+    res = stats.ttest_ind(sample_1, sample_2, equal_var=same_variances)
+    p_value = res[1]
+    if p_value > 0.05:
+        print("According to a T-Test for independent samples we can not reject the null hypothesis, in fact:")
         print("The p-value is:", p_value)
-        print("The two variances differ in a significant way")
-    return f_stats, p_value
+        print("The two means (" + str(np.mean(Series(sample_1))), str(np.mean(Series(sample_2))) + ") do not differ in a significant way.")
+    else:
+        print("According to a T-Test for independent samples we can accept the alternative hypothesis, in fact:")
+        print("The p-value is:", p_value)
+        print("The two means (" + str(np.mean(Series(sample_1))), str(np.mean(Series(sample_2))) + ") differ in a significant way.")
+    return res
 
-def population_sampling(population, sample_size):
-    normal = False
-    while not normal:
-        pop_sample = sample(population, sample_size)
-        p_value = check_distribution(pop_sample, True)
-        if p_value > 0.05:
-            return pop_sample
 
-def stratified_random_sampling(population, sample_size):
-    population_df = DataFrame(population)
-    normal = False
-    while not normal:
-        fraction = sample_size/len(population_df.index)
-        sample_df = population_df.groupby('labels', group_keys=False).apply(lambda x: x.sample(frac=fraction))
-        pop_sample = sample_df["scores"].to_list()
-        p_value = check_distribution(pop_sample, True)
-        if p_value > 0.05:
-            return pop_sample
-
-def t_test_independence():
-    pass
 
 """
 # Classifiers functions
