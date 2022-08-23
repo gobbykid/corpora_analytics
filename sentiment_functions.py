@@ -71,9 +71,8 @@ def emotion_frequencies(url, emotion_dict):
     emotions = emo_analyzer.affect_frequencies
     for emo in emotions:
         if emo not in emotion_dict:
-            emotion_dict[emo] = emotions[emo]
-        else:
-            emotion_dict[emo] = (emotion_dict[emo] + emotions[emo])/2
+            emotion_dict[emo] = []
+        emotion_dict[emo].append(emotions[emo])
     return emotion_dict
 
 def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, proper_nouns_dict, male_words, female_words):
