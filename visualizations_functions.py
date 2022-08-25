@@ -1,5 +1,3 @@
-from normalization_functions import *
-from analytics_functions import *
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from notebookjs import execute_js
@@ -7,9 +5,10 @@ import numpy as np
 from PIL import Image
 from os import path
 import os
-import pandas as pd
 import scipy.stats as stats
 import pylab
+from normalization_functions import *
+from analytics_functions import *
 
 def wordcloud_generator(freq_dict, male_author=True):
     d = path.dirname(__file__) if "__file__" in locals() else os.getcwd()

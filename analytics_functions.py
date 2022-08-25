@@ -1,7 +1,5 @@
-from lib2to3.pgen2.pgen import DFAState
-from normalization_functions import *
 import pandas as pd
-from random import sample
+from normalization_functions import *
 from visualizations_functions import *
 
 def token_count(text, remove_punctuation=True):
