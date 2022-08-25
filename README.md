@@ -53,7 +53,7 @@ In particular, we will need to install the following libraries:
         pip install scipy
     ```
 
-Moreover, for some particular situations (for example to better train the Word2vec model by Gensim, is also possible - <b>and strongly suggested</b> - to install [Cython](https://cython.org)). 
+Moreover, for some particular situations (for example to better train the Word2vec model by Gensim) is also possible - <b>and strongly suggested</b> - to install [Cython](https://cython.org)). 
 
 
 
