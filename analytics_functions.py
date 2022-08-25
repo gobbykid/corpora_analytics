@@ -1,4 +1,3 @@
-import pandas as pd
 from normalization_functions import *
 from visualizations_functions import *
 

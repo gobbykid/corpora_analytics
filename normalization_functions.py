@@ -10,8 +10,10 @@ from nltk.stem import WordNetLemmatizer
 import os
 from os.path import exists
 import re
-from pprint import *
+import pandas as pd
 from pandas import *
+import gensim
+from pprint import *
 from matplotlib import *
 import contractions
 import syntok.segmenter as segmenter
@@ -96,6 +98,27 @@ def syntok_list_of_sentences(text):
             temp = ''.join(token_list)
             res.append(temp)
     return res
+
+# A function that returns a list of lists of tokens of each sentence of a corpus
+def list_builder(list_of_urls):
+# Must be removed all proper names!!!
+    commons = text_reader("Useful elements and texts/common_ws_list.txt")
+    common_ws_list = list()
+    for row in commons.split():
+        common_ws_list.append(row.lower())
+    common_ws_list = set(common_ws_list)
+    
+    all_tokens = list()
+    for url in list_of_urls:
+        text = text_reader(url)
+        list_of_sentences = syntok_list_of_sentences(text)
+        for sentence in list_of_sentences:
+            sentence_tokens = expand_contractions(sentence, False, True, True)
+            for token in sentence_tokens:
+                if token in stopwords or token in ['"',"'",'.',',','/','-'] or token in common_ws_list:
+                    sentence_tokens.remove(token)
+            all_tokens.append(sentence_tokens)
+    return all_tokens
 
 def tokenize_texts(text):
     tok = Tokenizer()
