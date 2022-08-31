@@ -25,7 +25,7 @@ from syntok.tokenizer import Tokenizer
 tokenizer = RegexpTokenizer(pattern= "\s+", gaps=True) 
 # This "clean_tokenizer" avoid to consider punctuation but takes into consideration ' and - and _
 clean_tokenizer = RegexpTokenizer(pattern= "[a-zA-Z']+")
-sentence_tokenizer = nltk.data.load('Tokenizers/english.pickle')
+sentence_tokenizer = nltk.data.load('assets/Tokenizers/english.pickle')
 
 # Seen that some of the stopwords are also contained in these 2 sets that we need to
 # gender sentences, I will first remove all of them.
@@ -102,7 +102,7 @@ def syntok_list_of_sentences(text):
 # A function that returns a list of lists of tokens of each sentence of a corpus
 def list_builder(list_of_urls):
 # Must be removed all proper names!!!
-    commons = text_reader("Useful elements and texts/common_ws_list.txt")
+    commons = text_reader("assets/Useful elements and texts/common_ws_list.txt")
     common_ws_list = list()
     for row in commons.split():
         common_ws_list.append(row.lower())
@@ -144,10 +144,10 @@ def expand_contractions(input_url_or_text, is_url=False, remove_punctuation=True
     expanded_words = list()
     if is_url:
         splitted_url = input_url_or_text.split("/")
-        if splitted_url[0] == "Raw":
-            new_url = "Expanded" + input_url_or_text[3:-4] + "_expanded.txt"
-        else:
-            return "Expanded" + input_url_or_text[5:-4] + "_expanded.txt"
+        if splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "F":
+            new_url = "assets/Normalized corpora/F/"+splitted_url[3]
+        elif splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "M":
+            new_url = "assets/Normalized corpora/M/"+splitted_url[3]
         if not exists(new_url):
             raw = text_reader(input_url_or_text)
             # using contractions.fix to expand the shortened words
@@ -155,8 +155,7 @@ def expand_contractions(input_url_or_text, is_url=False, remove_punctuation=True
                 expanded_words.append(contractions.fix(word))
             expanded_text = ' '.join(expanded_words)
             new_file = open(new_url,'w')
-            for word in expanded_text:
-                new_file.write(word)
+            new_file.write(expanded_text)
             new_file.close()
             return new_url
     else:
@@ -166,25 +165,51 @@ def expand_contractions(input_url_or_text, is_url=False, remove_punctuation=True
         return expanded_words
     
 
-# Expand contractions and remove punctuation
-#Remember to give the same name to the new txt file, it will be modified inside the function
+# Expand contractions and DO NOT remove punctuation
+# Remember to give the same name to the new txt file, it will be modified inside the function
 def text_cleaner(url):
     splitted_url = url.split("/")
-    if splitted_url[0] == "Raw":
-        new_url = "Clean" + url[3:-4] + "_clean.txt"
-    elif splitted_url[0] == "Expanded":
-        new_url = "Clean" + url[8:-4] + "_clean.txt"
+    if splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "F":
+        new_url = "assets/Normalized corpora/F/"+splitted_url[3]
+    elif splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "M":
+        new_url = "assets/Normalized corpora/M/"+splitted_url[3]
     if not exists(new_url):
-        expanded_text_url = expand_contractions(url, True)
-        expanded_text = text_reader(expanded_text_url)
+        book = text_reader(url)
+        book = re.sub('\[[Ii]llustration(.+)?\]|\[[Pp]icture(.+)?\]', '', book)
+        expanded_words = expand_contractions(book, False, False, False)
         # Cleans from stopwords
         new_file = open(new_url,'a')
-        for word in expanded_text.split(): 
+        for word in expanded_words: 
             if not word in stopwords:
                 new_file.write(" " + word)
         new_file.close()
         return new_url
     return new_url
+
+# Probably not useful................................
+def text_normalizer(url):
+    splitted_url = url.split("/")
+    if splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "F":
+        new_url = "assets/Normalized corpora/F/"+splitted_url[3]
+    elif splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "M":
+        new_url = "assets/Normalized corpora/M/"+splitted_url[3]
+    if not exists(new_url):
+        book = text_reader(url)
+        # Siamo sicuri di sta roba?
+        book = re.sub('\w+\n', '. ', book) #we replace the newlines with a dot and a space, so that the syntok segmenter can work properly
+        book = re.sub('\n', ' ', book) #and so on...
+        book = re.sub('--', ' ', book)
+        book = re.sub('-', ' ', book)
+        book = re.sub('_', ' ', book)
+        book = re.sub('- -', ' ', book)
+        book = re.sub('\*', ' ', book)
+        book = re.sub('\s+', ' ', book)
+        book = re.sub('\[[Ii]llustration(.+)?\]|\[[Pp]icture(.+)?\]', '', book)
+        new_file = open(new_url,'w')
+        new_file.write(book)
+        new_file.close()
+        return new_url
+
 
 
 def create_corpus(corpus_directory_path):

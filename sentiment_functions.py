@@ -44,27 +44,6 @@ def increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_di
 def sentiment_analysis(sentence):
     return TextBlob(sentence).sentiment.polarity
 
-# remove punctuation before words
-def is_it_proper(word, proper_nouns):
-        if word[0] == word[0].upper() and word[0] not in ['"',"'",'.',',','/','-']:
-            if len(word) > 1:
-                if word[0] != "I" and word[1] != "'":
-                    case = 'upper'
-                elif word[0] != "I" and word[1] != ' ':
-                    case = 'upper'
-                else:
-                    case = 'lower'
-            else:
-                case = 'lower'
-        else:
-            case = 'lower'
-        word_lower = word.lower()
-        
-        try:
-            proper_nouns[word_lower][case] = proper_nouns[word_lower].get(case,0) + 1
-        except:
-            proper_nouns[word_lower] = {case:1}
-
 def emotion_frequencies(url, emotion_dict):
     text = text_reader(url)
     emo_analyzer = NRCLex(text) 
@@ -75,7 +54,7 @@ def emotion_frequencies(url, emotion_dict):
         emotion_dict[emo].append(emotions[emo])
     return emotion_dict
 
-def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, proper_nouns_dict, male_words, female_words):
+def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, male_words, female_words):
     #create list of sentences
     list_of_sentences = syntok_list_of_sentences(text)
     #tokenization not for analysis
@@ -86,8 +65,6 @@ def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_word
                                         "polarity":"",
                                         "score":""
                                         }
-        for word in word_tokenization(sentence, True, False)[1:]:
-            is_it_proper(word, proper_nouns_dict)
         #With "expand_contractions" I also tokenize the text
         sentence_tokens = expand_contractions(sentence, False, True, True)
         sentence_tokens = lemmatization(sentence_tokens)

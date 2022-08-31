@@ -25,9 +25,9 @@ def wordcloud_generator(freq_dict, male_author=True):
 
 def radial_bar_chart_generator(csv_path):
     d3_lib_url = "https://d3js.org/d3.v3.min.js"
-    with open("Visualizations/radial_bar.css", "r") as f:
+    with open("assets/Visualizations/radial_bar.css", "r") as f:
         radial_bar_css = f.read()
-    with open ("Visualizations/radial_bar_lib.js", "r") as f:
+    with open ("assets/Visualizations/radial_bar_lib.js", "r") as f:
         radial_bar_lib = f.read()
 
     energy = pd.read_csv(csv_path)
