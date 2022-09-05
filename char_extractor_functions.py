@@ -47,32 +47,15 @@ with open('assets/CSV non-characters/exclamations.csv') as f:
 
 def get_characters(url):
     book = text_reader(url)
-    tic = time.perf_counter()
     nltk_characters_set = get_charaters_nltk(book) #we get the characters with nltk
-    toc = time.perf_counter()
-    print("Time for <get_charaters_nltk(book)>:", toc-tic)
-
-    tic = time.perf_counter()
     spacy_characters_set = get_characters_spacy(book) #we get the characters with spacy
-    toc = time.perf_counter()
-    print("Time for <get_characters_spacy(book)>:", toc-tic)
-
-    tic = time.perf_counter()
     proper_nouns_dict = get_proper_nouns(book) #we get the characters with our own extraction method (syntok and regexTokenizer)
-    toc = time.perf_counter()
-    print("Time for <get_proper_nouns(book)>:", toc-tic)
-
-    tic = time.perf_counter()
     proper_nouns_set = set([word for word in proper_nouns_dict if proper_nouns_dict[word].get('upper', 0) / 
                         (proper_nouns_dict[word].get('upper', 0) + proper_nouns_dict[word].get('lower', 0)) 
                         == 1 and proper_nouns_dict[word]["upper"] > 1 and proper_nouns_dict[word]["not_first"] > 0]) #set a threshold: consider only words occuring more than once and at least once not at the beginning of a sentence (in order to avoid the recognition of exclamations and other words that are not names)
     proper_nouns_set = check_names(proper_nouns_set) #check if the names are not nationalities, countries, etc. (see the function below)
-    toc = time.perf_counter()
-    print("Time for <check_names(proper_nouns_set)>:", toc-tic)
     #The returned result is the intersection between the set obtained from our simple extraction (acting as a filter) and the union between the one coming from the extraction with NLTK and the Spacy's one
     return (nltk_characters_set | spacy_characters_set) & proper_nouns_set
-
-
 
 
 #we make nltk work with its word_tokenizer while spacy works with its own. Our extraction, on the other hand, will work with the syntok segmenter and with a regexTokenizer (from NLTK) 
@@ -150,22 +133,6 @@ def get_proper_nouns(book):
 
 
 def syntok_sentence_tokenizer(book):
-    """
-    FUNZIONE TOMMASO
-    list_of_sentences = [] 
-    for paragraph in segmenter.process(book): #we use syntok's segmenter
-        for sent in paragraph:
-            temp = []
-            token_list = []
-            for token in sent:
-                token_list.append(token.spacing) #we get the spacing of the token (e.g. " ") and we add it to the list
-                token_list.append(token.value) #we get the value of the token (e.g. "Hello") and we add it to the list
-            if token_list[0] == ' ':
-                token_list.remove(token_list[0]) #we remove the first element of the list if it is a space
-            temp = ''.join(token_list)
-            list_of_sentences.append(temp)
-    return list_of_sentences
-    """
     res = []
     for paragraph in segmenter.process(book):
         for sent in paragraph:
