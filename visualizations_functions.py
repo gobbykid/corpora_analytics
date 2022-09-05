@@ -13,12 +13,12 @@ from analytics_functions import *
 def wordcloud_generator(freq_dict, male_author=True):
     d = path.dirname(__file__) if "__file__" in locals() else os.getcwd()
     if male_author:
-        mask = np.array(Image.open(path.join(d, "Useful elements and texts/boy.png")))
+        mask = np.array(Image.open(path.join(d, "assets/Useful elements and texts/boy.png")))
         wordcloud = WordCloud(mask=mask).generate_from_frequencies(freq_dict)
         plt.figure(figsize=(18,10))
         plt.imshow(wordcloud)
     else:
-        mask = np.array(Image.open(path.join(d, "Useful elements and texts/girl.png")))
+        mask = np.array(Image.open(path.join(d, "assets/Useful elements and texts/girl.png")))
         wordcloud = WordCloud(mask=mask).generate_from_frequencies(freq_dict)
         plt.figure(figsize=(18,10))
         plt.imshow(wordcloud)

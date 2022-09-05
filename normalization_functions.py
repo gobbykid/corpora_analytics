@@ -113,7 +113,7 @@ def list_builder(list_of_urls):
         text = text_reader(url)
         list_of_sentences = syntok_list_of_sentences(text)
         for sentence in list_of_sentences:
-            sentence_tokens = expand_contractions(sentence, False, True, True)
+            sentence_tokens = expand_contractions(sentence, False, True)
             for token in sentence_tokens:
                 if token in stopwords or token in ['"',"'",'.',',','/','-'] or token in common_ws_list:
                     sentence_tokens.remove(token)
@@ -209,8 +209,6 @@ def text_normalizer(url):
         new_file.write(book)
         new_file.close()
         return new_url
-
-
 
 def create_corpus(corpus_directory_path):
     newcorpus = PlaintextCorpusReader(corpus_directory_path, '.*')
