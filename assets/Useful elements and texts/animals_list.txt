@@ -4,11 +4,16 @@ Cat
 Cattle
 Dog
 Donkey
+Dragon
+Dragons
 Goat
+Goats
 Guinea pig
 Horse
 Pig
+Pigs
 Rabbit
+Rat
 Fancy rat varieties
 laboratory rat strains
 Sheep breeds

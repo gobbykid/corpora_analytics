@@ -8,22 +8,25 @@ from nrclex import NRCLex
 #The function below takes a work list and returns the gender of the person being 
 # talked about, if any, based on the number of words a sentence has in common with 
 # either the male or female word lists.
-def gender_the_sentence(sentence_words, male_words, female_words):
-    male_w = len(male_words.intersection(sentence_words))
-    female_w = len(female_words.intersection(sentence_words))
-    #male_n = len(male_names_heidi.intersection(sentence_words))
-    #female_n = len(female_names_heidi.intersection(sentence_words))
-    #male_w += male_n
-    #female_w += female_n
-    if male_w > 0 and female_w == 0:
+def gender_the_sentence(sentence_words, male_words, female_words, male_char, female_char):
+    
+    male_w = male_words.intersection(sentence_words)
+    male_chars = male_char.intersection(sentence_words)
+    male_length = len(male_w) + len(male_chars)
+
+    female_w = female_words.intersection(sentence_words)
+    female_chars = female_char.intersection(sentence_words)
+    female_length = len(female_w) + len(female_chars)
+    
+    if male_length > 0 and female_length == 0:
         gender = 'male'
-    elif male_w == 0 and female_w > 0: 
+    elif male_length == 0 and female_length > 0: 
         gender = 'female'
-    elif male_w > female_w:
+    elif male_length > female_length:
         gender = 'mainly_male'
-    elif male_w < female_w:
+    elif male_length < female_length:
         gender = 'mainly_female'
-    elif male_w == female_w and male_w != 0: 
+    elif male_length == female_length and male_length != 0: 
         gender = 'both'
     else:
         gender = 'none'
@@ -54,7 +57,7 @@ def emotion_frequencies(url, emotion_dict):
         emotion_dict[emo].append(emotions[emo])
     return emotion_dict
 
-def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, male_words, female_words):
+def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_words_dict, freq_dict, male_words, female_words, male_char, female_char):
     #create list of sentences
     list_of_sentences = syntok_list_of_sentences(text)
     #tokenization not for analysis
@@ -66,7 +69,7 @@ def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_word
                                         "score":""
                                         }
         #With "expand_contractions" I also tokenize the text
-        sentence_tokens = expand_contractions(sentence, False, True, True)
+        sentence_tokens = expand_contractions(sentence, False, True, False)
         sentence_tokens = lemmatization(sentence_tokens)
         for token in sentence_tokens:
             if token in stopwords or token in ['"',"'",'.',',','/','-']:
@@ -79,7 +82,7 @@ def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_word
         sentences_dict_df[sentence]["number_of_tokens"] = len(sentence_tokens)
         
         #gender the sentence
-        gender = gender_the_sentence(sentence_tokens, male_words, female_words)
+        gender = gender_the_sentence(sentence_tokens, male_words, female_words, male_char, female_char)
         sentences_dict_df[sentence]["gender"] = gender
         increment_gender(sentence_tokens, gender, sentence_dict, words_dict, freq_dict)
         polarity_score = sentiment_analysis(sentence)

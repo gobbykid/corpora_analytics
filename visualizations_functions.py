@@ -3,22 +3,20 @@ from wordcloud import WordCloud
 from notebookjs import execute_js
 import numpy as np
 from PIL import Image
-from os import path
-import os
+from sklearn.decomposition import PCA
 import scipy.stats as stats
 import pylab
 from normalization_functions import *
 from analytics_functions import *
 
 def wordcloud_generator(freq_dict, male_author=True):
-    d = path.dirname(__file__) if "__file__" in locals() else os.getcwd()
     if male_author:
-        mask = np.array(Image.open(path.join(d, "assets/Useful elements and texts/boy.png")))
+        mask = np.array(Image.open("assets/Useful elements and texts/boy.png"))
         wordcloud = WordCloud(mask=mask).generate_from_frequencies(freq_dict)
         plt.figure(figsize=(18,10))
         plt.imshow(wordcloud)
     else:
-        mask = np.array(Image.open(path.join(d, "assets/Useful elements and texts/girl.png")))
+        mask = np.array(Image.open("assets/Useful elements and texts/girl.png"))
         wordcloud = WordCloud(mask=mask).generate_from_frequencies(freq_dict)
         plt.figure(figsize=(18,10))
         plt.imshow(wordcloud)
@@ -79,3 +77,75 @@ def distribution_graph(series, left_limit, right_limit):
 
 def qq_plot(data):
     return stats.probplot(data,plot=pylab)
+
+def analogies_plot(orig_data, labels):
+    pca = PCA(n_components=2)
+    data = pca.fit_transform(orig_data)
+    plt.figure(figsize=(7, 5), dpi=100)
+    plt.xlabel("PCA Component 2")
+    plt.ylabel("PCA Component 1")
+    plt.plot(data[:,0], data[:,1], '.')
+    
+    for i in range(len(data)//2):
+        plt.annotate("",
+                    xy=data[i],
+                    xytext=data[i+len(data)//2],
+                    arrowprops=dict(arrowstyle="<-",
+                                    connectionstyle="arc3, rad=0",
+                                    relpos=(1., 1.), fc='w')
+            )
+    for i in range(len(data)):
+        if i < len(data)//2:
+            plt.annotate(labels[i], xy=data[i], color='#2081C3',size='small')
+        else:
+            plt.annotate(labels[i], xy=data[i], color='#FF729F',size='small')
+
+def plot_embedding_space(list_of_words, model, female_words=True): 
+    plt.figure(figsize=(13,7))
+    pca = PCA(n_components=2)
+    data = list()   
+    for w in list_of_words:
+        if w in model.wv:
+            data.append(model.wv[w])
+    pca_data = pca.fit_transform(data)
+    if female_words:
+        plt.scatter(pca_data[:,0],pca_data[:,1],linewidths=10,color='#FEC9F1')
+        plt.title("Word Embedding Space - Female related words",size=20)
+    else:
+        plt.scatter(pca_data[:,0],pca_data[:,1],linewidths=10,color='#A3C4BC')
+        plt.title("Word Embedding Space - Male related words",size=20)
+    plt.xlabel("PC1",size=12)
+    plt.ylabel("PC2",size=12)
+    for i, pca in enumerate(pca_data):
+        plt.annotate(list_of_words[i], xy=(pca_data[i,0],pca_data[i,1]))
+
+
+def plot_final_embedding_space(f_words, m_words, model, female_corpus=True): 
+    plt.figure(figsize=(13,7))
+    pca = PCA(n_components=2)
+    list_of_words = list()
+    f_len = len(f_words)
+    list_of_words.extend(f_words)
+    m_len = len(m_words)
+    list_of_words.extend(m_words)
+    data = list()   
+    for i,w in enumerate(list_of_words):
+        if w in model.wv:
+            data.append(model.wv[w])
+        else:
+            if i < f_len:
+                f_len -= 1
+            else:
+                m_len -= 1    
+    pca_data = pca.fit_transform(data)
+    plt.scatter(pca_data[:f_len,0],pca_data[:f_len,1],linewidths=10,color='#FEC9F1')
+    plt.scatter(pca_data[m_len:,0],pca_data[m_len:,1],linewidths=10,color='#A3C4BC')
+    if female_corpus:
+        plt.title("Word Embedding Space - Female authors corpus", size=20)
+    else:
+        plt.title("Word Embedding Space - Male authors corpus", size=20)
+    plt.xlabel("PC1",size=12)
+    plt.ylabel("PC2",size=12)
+    for i, pca in enumerate(pca_data):
+        plt.annotate(list_of_words[i], xy=(pca_data[i,0],pca_data[i,1]))
+

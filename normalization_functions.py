@@ -18,6 +18,7 @@ from matplotlib import *
 import contractions
 import syntok.segmenter as segmenter
 from syntok.tokenizer import Tokenizer
+from tqdm import tqdm
 
 # In the following, the "gaps=True" parameter is useful in order to specify that we want to find the spaces
 #marked thanks to the special regex "\s+" as delimiters and not as tokens
@@ -41,11 +42,13 @@ female_words=set(['heroine','drss','spokeswoman','chairwoman',"women's",'actress
 'herself','ladies','lady','mom','moms','mother','mothers','mrs','ms','niece',
 'nieces','priestess','princess','queens','she','sister','sisters','waitress',
 'widow','widows','wife','wives','woman','she','she is','lady'])
+
 stopwords = stopwords.words('english')
 for word in stopwords:
     if word in male_words or word in female_words:
         stopwords.remove(word)
 
+lemmatizer = WordNetLemmatizer()
 # Text reading and normalization functions
 
 # Reads text
@@ -107,7 +110,6 @@ def list_builder(list_of_urls):
     for row in commons.split():
         common_ws_list.append(row.lower())
     common_ws_list = set(common_ws_list)
-    
     all_tokens = list()
     for url in list_of_urls:
         text = text_reader(url)
@@ -125,10 +127,8 @@ def tokenize_texts(text):
     return [token.value for token in tok.tokenize(text)]
 
 def lemmatization(tokens):
-    lemmatizer = WordNetLemmatizer()
     list_of_lemmas = list()
     for token in tokens:
-        token = token.lower()
         list_of_lemmas.append(lemmatizer.lemmatize(token))
     return list_of_lemmas
 

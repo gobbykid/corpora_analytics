@@ -4,7 +4,7 @@ import re
 
 male_words = {"sir", "duke", "lord", "king", "prince",  "mister", "mr", "father", "uncle", "son", "brother", "boy", "widower", "master"}
 female_words = {"lady", "duchess", "queen", "princess", "dame", "missis", "miss", "mrs", "ms", "aunt", "mother", "sister", "daughter", "girl", "widow", "mistress"}
-
+gc = GenderComputer()
 
 def filter_surnames(names_set):
     single_word_names = []
@@ -32,13 +32,7 @@ def filter_surnames(names_set):
 
     return filtered_swn, multiple_words_names
 
-
-
-
-
-
 def gender_recognition(names_set):
-    gc = GenderComputer()
     single_word_names, multiple_words_names = filter_surnames(names_set) #This function aims at removing the names that are composed by a single word but are present in the list of names composed by multiple words
 
     male_characters = []
@@ -63,10 +57,8 @@ def gender_recognition(names_set):
             except:
                 unknown_gender.append(name)
 
-    
     for full_name in multiple_words_names:                        #The first block of checks aims at guessing the gender on the basis of genderdized words present in the strings without using any additional library
         joined_name = " ".join(full_name)
-
         if len(set(full_name) & male_words) > 0:                #By checking the presence of genderdized words in the name we can directly append the name in the right list
             do_not_add = False
             for masculine_name in male_characters:
@@ -79,8 +71,6 @@ def gender_recognition(names_set):
                     continue
             if do_not_add == False:
                 male_characters.append(joined_name)
-
-
         elif len(set(full_name) & female_words) > 0:
                 do_not_add = False
                 for feminine_name in female_characters:
@@ -93,8 +83,6 @@ def gender_recognition(names_set):
                         continue                   
                 if do_not_add == False:
                     female_characters.append(joined_name)
-
-
         else:                                                       #Now, it is used the same process as before: first we check the gender by meand of genderComputer
             gender = gc.resolveGender(joined_name, None)           #If the name is not found, it returns None
             if gender == "male":
@@ -140,12 +128,8 @@ def gender_recognition(names_set):
                                             continue
                                     except:
                                         continue
-                                
-
-
+                            
     return male_characters, female_characters, unknown_gender
-
-
 
 def check_list_mwn(character_list, name_to_check):
     dupl_list = character_list
