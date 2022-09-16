@@ -5,11 +5,10 @@ from nrclex import NRCLex
 
 # GENDER THE SENTENCE
 
-#The function below takes a work list and returns the gender of the person being 
-# talked about, if any, based on the number of words a sentence has in common with 
-# either the male or female word lists.
 def gender_the_sentence(sentence_words, male_words, female_words, male_char, female_char):
-    
+    #The function below takes a words list and returns the gender of the sentence
+    # if any, based on the number of words a sentence has in common with 
+    # either the male or female word lists and the female and male characters lists.
     male_w = male_words.intersection(sentence_words)
     male_chars = male_char.intersection(sentence_words)
     male_length = len(male_w) + len(male_chars)
@@ -69,7 +68,8 @@ def gender_analysis(text, sentences_dict_df, sentence_dict, words_dict, raw_word
                                         "score":""
                                         }
         #With "expand_contractions" I also tokenize the text
-        sentence_tokens = expand_contractions(sentence, False, True, False)
+        # Everything must be in lower
+        sentence_tokens = expand_contractions(sentence, False, True, True)
         sentence_tokens = lemmatization(sentence_tokens)
         for token in sentence_tokens:
             if token in stopwords or token in ['"',"'",'.',',','/','-']:

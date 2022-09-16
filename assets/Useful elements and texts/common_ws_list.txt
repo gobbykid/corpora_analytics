@@ -1,6 +1,10 @@
 'i
 'my
 'who
+æ
+æolian
+ærial
+æsop
 a
 able
 about
@@ -77,12 +81,15 @@ certain
 certainly
 clear
 clearly
+cogez
 come
 could
 couldn't
 could've
 d
+daas
 dear
+deordie
 did
 didn't
 differ
@@ -95,12 +102,14 @@ doing
 don
 done
 don't
+dorincourt
 down
 downed
 downing
 downs
 during
 e
+ee
 each
 early
 e.g
@@ -231,6 +240,7 @@ less
 let
 lets
 let's
+liberality's
 like
 likely
 ly
@@ -245,6 +255,7 @@ ma
 made
 make
 making
+maud
 many
 may
 maybe
@@ -319,6 +330,7 @@ part
 parted
 parting
 parts
+patrasche
 per
 perhaps
 place
@@ -523,3 +535,4 @@ yourself
 yourselves
 you've
 z
+zz

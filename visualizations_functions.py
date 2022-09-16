@@ -6,6 +6,7 @@ from PIL import Image
 from sklearn.decomposition import PCA
 import scipy.stats as stats
 import pylab
+import altair as alt
 from normalization_functions import *
 from analytics_functions import *
 
@@ -149,3 +150,42 @@ def plot_final_embedding_space(f_words, m_words, model, female_corpus=True):
     for i, pca in enumerate(pca_data):
         plt.annotate(list_of_words[i], xy=(pca_data[i,0],pca_data[i,1]))
 
+
+def tfidf_heatmap(df_top_scores, red_list, female_authors=True):
+    # adding a little randomness to break ties in term ranking
+    top_tfidf_plusRand = df_top_scores.copy()
+    top_tfidf_plusRand['tfidf'] = top_tfidf_plusRand['tfidf'] + np.random.rand(df_top_scores.shape[0])*0.0001
+
+    # base for all visualizations, with rank calculation
+    base = alt.Chart(top_tfidf_plusRand).encode(
+        x = 'rank:O',
+        y = 'document:N'
+    ).transform_window(
+        rank = "rank()",
+        sort = [alt.SortField("tfidf", order="descending")],
+        groupby = ["document"],
+    )
+    # heatmap specification
+    if female_authors:
+        heatmap = base.mark_rect().encode(
+            color=alt.Color('tfidf:Q',scale=alt.Scale(range=['#ffdde1','#89216B']))
+        )
+    else:
+        heatmap = base.mark_rect().encode(
+            color=alt.Color('tfidf:Q',scale=alt.Scale(range=['#FFFDE4','#005AA7']))
+        )
+    # red circle over terms in above list
+    circle = base.mark_circle(size=100).encode(
+        color = alt.condition(
+            alt.FieldOneOfPredicate(field='term', oneOf=red_list),
+            alt.value('red'),
+            alt.value('#FFFFFF00')        
+        )
+    )
+    # text labels, white for darker heatmap colors
+    text = base.mark_text(baseline='middle').encode(
+        text = 'term:N',
+        color = alt.condition(alt.datum.tfidf >= 0.30, alt.value('white'), alt.value('black'))
+    )
+    # display the three superimposed visualizations
+    (heatmap + circle + text).properties(width = 600)
