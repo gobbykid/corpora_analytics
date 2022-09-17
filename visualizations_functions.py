@@ -6,6 +6,7 @@ from PIL import Image
 from sklearn.decomposition import PCA
 import scipy.stats as stats
 import pylab
+import seaborn as sns
 import altair as alt
 from normalization_functions import *
 from analytics_functions import *

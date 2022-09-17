@@ -186,7 +186,7 @@ def text_cleaner(url):
         return new_url
     return new_url
 
-# Probably not useful................................
+# Probably not useful-----------------------------------
 def text_normalizer(url):
     splitted_url = url.split("/")
     if splitted_url[0] == "assets" and splitted_url[1] == "Raw corpora" and splitted_url[2] == "F":
@@ -209,6 +209,7 @@ def text_normalizer(url):
         new_file.write(book)
         new_file.close()
         return new_url
+# -------------------------------------------------------
 
 def create_corpus(corpus_directory_path):
     newcorpus = PlaintextCorpusReader(corpus_directory_path, '.*')
