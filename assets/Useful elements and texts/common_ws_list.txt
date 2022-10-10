@@ -46,6 +46,7 @@ asking
 asks
 at
 away
+ay
 b
 back
 backed
@@ -88,6 +89,7 @@ couldn't
 could've
 d
 daas
+de
 dear
 deordie
 did
@@ -200,6 +202,7 @@ i am
 i'd
 i.e
 i.e.
+ida
 if
 i'll
 i'm
@@ -209,6 +212,7 @@ instead
 interested
 interesting
 into
+irene
 is
 isn'
 isn't
@@ -220,6 +224,7 @@ it's
 itself
 i've
 j
+jib
 just
 k
 keep
@@ -235,6 +240,7 @@ largely
 last
 later
 latest
+lee
 least
 less
 let
@@ -277,6 +283,7 @@ my
 myself
 n
 nat
+nay
 necessary
 need
 needed
@@ -404,6 +411,7 @@ still
 such
 sure
 t
+ta
 take
 taken
 teh
@@ -500,6 +508,7 @@ where's
 whether
 which
 while
+whilst
 who
 who'd
 whole

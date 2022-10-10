@@ -1,0 +1,1 @@
+https://projector.tensorflow.org/?config=https://gist.githubusercontent.com/Postitisnt/9246b4c91da3f15a36e272740ddeb1f9/raw/2d72219cc06e7845916d1faafc5db650f01f471b/setup.json
