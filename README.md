@@ -1,4 +1,4 @@
-# corpora_analytics
+# Corpora analytics
 
 This repository contains:
 - the statistical analysis of sentiment scores;
